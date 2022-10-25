@@ -1,21 +1,21 @@
-// import { createStore, combineReducers } from 'redux';
-// import pageReducer from './reducers/pageListReducer';
-// import { applyMiddleware } from 'redux';
-// import thunk from 'redux-thunk';
-// const rootReducer = combineReducers(
-//     { pageList: pageReducer }
-// );
-// const configureStore = () => {
-//     return createStore(rootReducer, applyMiddleware(thunk));
-// }
-// export default configureStore;
 
-
-
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { persistStore, persistReducer } from 'redux-persist';
 import thunk from 'redux-thunk';
 
-import reducers from './reducers/reducer'; //Import the reducer
+import reducers from './reducers/reducer'
 
-// Connect our store to the reducers
-export default createStore(reducers, applyMiddleware(thunk));
+const persistConfig = {
+    key: 'root',
+    storage: AsyncStorage,
+    whitelist: ['data']
+};
+
+
+const rootReducer = combineReducers({
+    dataReducer: persistReducer(persistConfig, reducers)
+});
+
+export const store = createStore(rootReducer, applyMiddleware(thunk));
+export const persistor = persistStore(store);
